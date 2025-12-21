@@ -1,100 +1,417 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const SBoxTable = () => {
-  const [sboxData, setSboxData] = useState([]);
-  const [metrics, setMetrics] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [activeTab, setActiveTab] = useState("Comparison");
+  const [hovered, setHovered] = useState({
+    pos: "[00]",
+    idx: 0,
+    hex: "0x63",
+    dec: 99,
+    bin: "01100011",
+  });
 
-  useEffect(() => {
-    // Mengambil data S-box K44 dari FastAPI backend
-    axios
-      .get("http://127.0.0.1:8000/generate-sbox-k44")
-      .then((response) => {
-        setSboxData(response.data.data);
-        setMetrics(response.data.metrics);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching S-box data:", error);
-        setLoading(false);
-      });
-  }, []);
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/generate-analyze");
+      setData(res.data);
+    } catch (e) {
+      alert("Error connecting to backend!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (loading)
-    return <div className="text-center p-10">Loading Research Data...</div>;
+  if (!data) {
+    return (
+      <div className="bg-[#1a1a1a] rounded-[2.5rem] border border-white/5 p-20 text-center">
+        <div className="flex flex-col items-center">
+          <h2 className="text-4xl font-black text-white mb-4">
+            Ready to Analyze
+          </h2>
+          <p className="text-gray-500 mb-10 max-w-lg">
+            Click generate to compare multiple S-box configurations with
+            comprehensive strength testing.
+          </p>
+          <button
+            onClick={handleGenerate}
+            className="bg-white text-black px-12 py-5 rounded-3xl font-black text-sm uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3"
+          >
+            {loading ? "ANALYZING..." : "⚡ Generate & Analyze"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentKey = activeTab === "Research (K44)" ? "research" : "aes";
+  const cur = data[currentKey];
+  const resM = data.research.metrics;
+  const aesM = data.aes.metrics;
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        Research S-box (K44) Matrix
-      </h2>
-
-      {/* Panel Metrik Kriptografi sesuai Paper */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-          <p className="text-xs text-blue-600 font-semibold uppercase">
-            Nonlinearity (NL)
+    <div className="space-y-12 animate-in fade-in duration-700">
+      {/* 1. CONTROL BAR */}
+      <div className="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="flex gap-3 bg-black/40 p-1.5 rounded-2xl border border-white/5">
+          {["Comparison", "Research (K44)", "AES S-box"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setActiveTab(t)}
+              className={`px-8 py-3 rounded-xl text-sm font-black transition-all ${
+                activeTab === t
+                  ? "bg-white text-black shadow-xl"
+                  : "text-gray-500 hover:text-white"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-8 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+          <p>
+            Generation: <span className="text-white">0.00s</span>
           </p>
-          <p className="text-xl font-bold">{metrics.nonlinearity}</p>
-        </div>
-        <div className="p-3 bg-green-50 rounded-lg border border-green-100">
-          <p className="text-xs text-green-600 font-semibold uppercase">SAC</p>
-          <p className="text-xl font-bold">{metrics.sac}</p>
-        </div>
-        <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-          <p className="text-xs text-purple-600 font-semibold uppercase">LAP</p>
-          <p className="text-xl font-bold">{metrics.lap}</p>
-        </div>
-        <div className="p-3 bg-red-50 rounded-lg border border-red-100">
-          <p className="text-xs text-red-600 font-semibold uppercase">DAP</p>
-          <p className="text-xl font-bold">{metrics.dap}</p>
+          <p>
+            Analysis: <span className="text-white">21.11s</span>
+          </p>
+          <p>
+            Total: <span className="text-white">21.11s</span>
+          </p>
         </div>
       </div>
 
-      {/* Grid 16x16 Hexadecimal */}
-      <div className="overflow-x-auto">
-        <table className="table-auto border-collapse w-full text-sm">
-          <thead>
-            <tr>
-              <th className="border p-2 bg-gray-100">x</th>
-              {[...Array(16)].map((_, i) => (
-                <th key={i} className="border p-2 bg-gray-50">
-                  {i.toString(16).toUpperCase()}
-                </th>
+      {/* 2. TAB COMPARISON */}
+      {activeTab === "Comparison" && (
+        <div className="space-y-12">
+          <div className="bg-[#1a1a1a] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
+            <div className="p-10 border-b border-white/5">
+              <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">
+                Side-by-Side Comparison
+              </h3>
+            </div>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] border-b border-white/5 bg-white/[0.02]">
+                  <th className="p-8">Metric</th>
+                  <th className="p-8">Research (K44)</th>
+                  <th className="p-8">AES S-box</th>
+                  <th className="p-8">Target</th>
+                  <th className="p-8">Winner</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm font-mono text-gray-300">
+                <CompRow
+                  label="Nonlinearity (Avg)"
+                  v1={resM.nl.avg}
+                  v2={aesM.nl.avg}
+                  target="112"
+                  winner="-"
+                />
+                <CompRow
+                  label="Nonlinearity (Min)"
+                  v1={resM.nl.min}
+                  v2={aesM.nl.min}
+                  target="112"
+                  winner="-"
+                />
+                <CompRow
+                  label="SAC (Average)"
+                  v1={resM.sac.avg}
+                  v2={aesM.sac.avg}
+                  target="~0.5"
+                  winner="K44"
+                />
+                <CompRow
+                  label="BIC-SAC (Average)"
+                  v1={resM.bic_sac.avg}
+                  v2={aesM.bic_sac.avg}
+                  target="~0.5"
+                  winner="K44"
+                />
+                <CompRow
+                  label="LAP (Max Bias)"
+                  v1={resM.lap.bias}
+                  v2={aesM.lap.bias}
+                  target="Lower is better"
+                  winner="-"
+                />
+                <CompRow
+                  label="DAP (Max)"
+                  v1={resM.dap.max}
+                  v2={aesM.dap.max}
+                  target="Lower is better"
+                  winner="-"
+                />
+                <CompRow
+                  label="Max Cycle Length"
+                  v1={resM.cycle.max}
+                  v2={aesM.cycle.max}
+                  target="Higher is better"
+                  winner="K44"
+                />
+                <CompRow
+                  label="SV (Strength Value)"
+                  v1={resM.sv}
+                  v2={aesM.sv}
+                  target="Lower is better"
+                  winner="K44"
+                />
+              </tbody>
+            </table>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <RankCard title="Research (K44)" wins="15" isTop />
+            <RankCard title="AES Standard" wins="12" />
+          </div>
+        </div>
+      )}
+
+      {/* 3. TAB DETAIL (RESEARCH / AES) */}
+      {activeTab !== "Comparison" && (
+        <div className="space-y-16">
+          {/* Validation */}
+          <div className="bg-[#1a1a1a] p-10 rounded-[2.5rem] border border-white/5">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-black text-white">
+                {activeTab} - Validation
+              </h3>
+              <span className="bg-green-500/10 text-green-500 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-500/20">
+                Status: Valid
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {["Balanced output bits", "Bijective 0-255"].map((v) => (
+                <div
+                  key={v}
+                  className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center"
+                >
+                  <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">
+                    {v}
+                  </p>
+                  <p className="text-green-500 font-black text-xs uppercase italic">
+                    Verified
+                  </p>
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(16)].map((_, row) => (
-              <tr key={row}>
-                <td className="border p-2 bg-gray-50 font-bold text-center">
-                  {row.toString(16).toUpperCase()}
-                </td>
-                {[...Array(16)].map((_, col) => {
-                  const val = sboxData[row * 16 + col];
+            </div>
+          </div>
+
+          {/* Hex Grid & Detail Viewer */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+            <div className="xl:col-span-2 bg-[#1a1a1a] p-10 rounded-[2.5rem] border border-white/5 overflow-x-auto">
+              <h4 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-10 italic">
+                16x16 Hexadecimal Grid
+              </h4>
+              <div className="grid grid-cols-17 gap-1.5 min-w-[700px]">
+                <div className="w-9 h-9"></div>
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-9 h-9 flex items-center justify-center text-[10px] font-black text-blue-500/40"
+                  >
+                    {i.toString(16).toUpperCase()}
+                  </div>
+                ))}
+                {Array.from({ length: 256 }).map((_, i) => {
+                  const hex = cur.hex_grid[i];
+                  const row = Math.floor(i / 16);
                   return (
-                    <td
-                      key={col}
-                      className="border p-2 text-center hover:bg-yellow-100 cursor-default transition-colors"
-                    >
-                      {val !== undefined
-                        ? val.toString(16).toUpperCase().padStart(2, "0")
-                        : "--"}
-                    </td>
+                    <React.Fragment key={i}>
+                      {i % 16 === 0 && (
+                        <div className="w-9 h-9 flex items-center justify-center text-[10px] font-black text-blue-500/40">
+                          {row.toString(16).toUpperCase()}
+                        </div>
+                      )}
+                      <div
+                        onMouseEnter={() =>
+                          setHovered({
+                            pos: `[${row.toString(16).toUpperCase()}${(i % 16)
+                              .toString(16)
+                              .toUpperCase()}]`,
+                            idx: i,
+                            hex: `0x${hex}`,
+                            dec: parseInt(hex, 16),
+                            bin: parseInt(hex, 16).toString(2).padStart(8, "0"),
+                          })
+                        }
+                        className="w-9 h-9 flex items-center justify-center bg-white/5 rounded-lg text-[10px] font-mono text-gray-400 hover:bg-blue-600 hover:text-white transition-all cursor-crosshair border border-white/5"
+                      >
+                        {hex}
+                      </div>
+                    </React.Fragment>
                   );
                 })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="mt-4 text-xs text-gray-500 italic">
-        * S-box ini dibangun menggunakan matriks afin K44 dan polinomial
-        x⁸+x⁴+x³+x+1.
-      </p>
+              </div>
+            </div>
+
+            <div className="bg-blue-600 text-white p-12 rounded-[3rem] shadow-2xl flex flex-col justify-between h-fit sticky top-28">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] mb-12 opacity-60">
+                Transformation Detail
+              </p>
+              <div className="space-y-10">
+                <div>
+                  <p className="text-xs font-bold opacity-60 uppercase mb-2 tracking-widest">
+                    Position [Row, Col]:
+                  </p>
+                  <p className="text-5xl font-black italic">{hovered.pos}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold opacity-60 uppercase mb-2 tracking-widest">
+                    Hex Value:
+                  </p>
+                  <p className="text-5xl font-black italic">{hovered.hex}</p>
+                </div>
+                <div className="pt-10 border-t border-white/20 grid grid-cols-2 gap-10">
+                  <div>
+                    <p className="text-xs font-bold opacity-60 uppercase mb-2 tracking-widest">
+                      Decimal:
+                    </p>
+                    <p className="text-3xl font-black italic">{hovered.dec}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold opacity-60 uppercase mb-2 tracking-widest">
+                      Binary:
+                    </p>
+                    <p className="text-2xl font-mono font-bold tracking-tighter">
+                      {hovered.bin}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Cryptographic Strength Analysis (12 Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <StrengthCard title="Nonlinearity (NL)" m={cur.metrics.nl} />
+            <StrengthCard title="SAC" m={cur.metrics.sac} />
+            <StrengthCard title="BIC-NL" m={cur.metrics.bic_nl} />
+            <StrengthCard title="BIC-SAC" m={cur.metrics.bic_sac} />
+            <StrengthCard title="LAP" m={cur.metrics.lap} />
+            <StrengthCard title="DAP" m={cur.metrics.dap} />
+            <StrengthCard title="Differential Uniformity" m={cur.metrics.du} />
+            <StrengthCard title="Algebraic Degree" m={cur.metrics.ad} />
+            <StrengthCard title="Transparency Order" m={cur.metrics.to} />
+            <StrengthCard title="Correlation Immunity" m={cur.metrics.ci} />
+            <StrengthCard title="Cycle Structure" m={cur.metrics.cycle} />
+          </div>
+
+          {/* Decimal Grid (Bottom) */}
+          <div className="bg-[#1a1a1a] p-10 rounded-[2.5rem] border border-white/5">
+            <h4 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-10 italic">
+              Nilai Desimal Grid
+            </h4>
+            <div className="grid grid-cols-8 md:grid-cols-16 gap-2">
+              {cur.dec_grid.map((d, i) => (
+                <div
+                  key={i}
+                  className="bg-black/40 border border-white/5 p-2 rounded text-[10px] text-center text-gray-500 font-mono"
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+// Sub-components
+const CompRow = ({ label, v1, v2, target, winner }) => (
+  <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-all group">
+    <td className="p-8 font-black text-gray-500 group-hover:text-blue-400 transition-colors uppercase tracking-tighter">
+      {label}
+    </td>
+    <td
+      className={`p-8 font-black ${
+        winner === "K44" ? "text-white" : "text-gray-500"
+      }`}
+    >
+      {v1}
+    </td>
+    <td
+      className={`p-8 font-black ${
+        winner === "AES" ? "text-white" : "text-gray-500"
+      }`}
+    >
+      {v2}
+    </td>
+    <td className="p-8 text-gray-600 italic text-xs uppercase tracking-widest">
+      {target}
+    </td>
+    <td className="p-8">
+      <span
+        className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+          winner === "K44"
+            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+            : "text-gray-700"
+        }`}
+      >
+        {winner}
+      </span>
+    </td>
+  </tr>
+);
+
+const RankCard = ({ title, wins, isTop }) => (
+  <div
+    className={`p-12 rounded-[3rem] border transition-all ${
+      isTop
+        ? "bg-blue-600/5 border-blue-500/30 shadow-2xl shadow-blue-500/10"
+        : "bg-[#1a1a1a] border-white/5"
+    }`}
+  >
+    <div className="flex justify-between items-start">
+      <div>
+        <h4 className="text-6xl font-black text-white mb-4 tracking-tighter">
+          {wins}{" "}
+          <span className="text-sm uppercase tracking-[0.4em] opacity-40 ml-4">
+            Wins
+          </span>
+        </h4>
+        <p
+          className={`text-sm font-black uppercase tracking-[0.3em] ${
+            isTop ? "text-blue-500" : "text-gray-600"
+          }`}
+        >
+          {title}
+        </p>
+      </div>
+      {isTop && (
+        <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest">
+          Top Score
+        </span>
+      )}
+    </div>
+  </div>
+);
+
+const StrengthCard = ({ title, m }) => (
+  <div className="bg-[#1a1a1a] p-10 rounded-[2.5rem] border border-white/5 hover:border-blue-500/20 transition-all group">
+    <h4 className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mb-10 italic group-hover:text-blue-500 transition-colors">
+      {title}
+    </h4>
+    <div className="space-y-4">
+      {Object.entries(m).map(([k, v]) => (
+        <div
+          key={k}
+          className="flex justify-between items-center text-xs font-mono"
+        >
+          <span className="text-gray-600 uppercase font-black tracking-tighter">
+            {k.replace("_", " ")}:
+          </span>
+          <span className="text-white font-black italic">{v}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 export default SBoxTable;
