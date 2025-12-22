@@ -25,13 +25,9 @@ const ImageEncryptor = () => {
 
     try {
       // Memanggil endpoint backend untuk pengolahan citra dan perhitungan metrik
-      const res = await axios.post(
-        "http://127.0.0.1:8000/process-image",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post("http://127.0.0.1:8000/process-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       setOutput(res.data.result_image);
 
@@ -44,9 +40,7 @@ const ImageEncryptor = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(
-        "Gagal terhubung ke backend. Pastikan server Python (main.py) aktif."
-      );
+      alert("Gagal terhubung ke backend. Pastikan server Python (main.py) aktif.");
     } finally {
       setLoading(false);
     }
@@ -57,8 +51,7 @@ const ImageEncryptor = () => {
     if (!output) return;
     const link = document.createElement("a");
     link.href = output;
-    link.download =
-      mode === "Encrypt Image" ? "encrypted_k44.png" : "decrypted_result.png";
+    link.download = mode === "Encrypt Image" ? "encrypted_k44.png" : "decrypted_result.png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -70,23 +63,22 @@ const ImageEncryptor = () => {
     setKey("");
     setOutput(null);
     setAnalysisData(null);
-    if (document.getElementById("imageInput"))
-      document.getElementById("imageInput").value = "";
+    if (document.getElementById("imageInput")) document.getElementById("imageInput").value = "";
   };
 
   return (
     <div className="space-y-12 w-full">
       {/* PANEL UTAMA IMAGE CRYPTOGRAPHY */}
-      <div className="bg-[#121212] p-10 rounded-[2.5rem] border border-white/5 shadow-2xl text-left font-sans">
-        <h2 className="text-3xl font-black mb-2 uppercase text-white tracking-tighter">
+      <div className="bg-gradient-to-br from-white to-green-50 p-10 rounded-[2.5rem] border border-[#0C342C]/20 shadow-2xl text-left font-sans">
+        <h2 className="text-3xl font-black mb-2 uppercase bg-gradient-to-r from-[#E3EF26] via-[#076653] to-[#0C342C] bg-clip-text text-transparent tracking-tighter">
           Image Cryptography
         </h2>
-        <p className="text-gray-500 text-sm mb-10 font-medium italic opacity-70">
+        <p className="text-gray-600 text-sm mb-10 font-medium italic opacity-70">
           Visual Security Test with S-box Substitution & Statistics Evaluation
         </p>
 
         {/* Tabs Level 1: Encrypt / Decrypt */}
-        <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/5 mb-4">
+        <div className="flex bg-gradient-to-r from-[#E3EF26]/20 to-[#076653]/20 p-1.5 rounded-2xl border border-[#0C342C]/20 mb-4">
           {["Encrypt Image", "Decrypt Image"].map((m) => (
             <button
               key={m}
@@ -97,8 +89,8 @@ const ImageEncryptor = () => {
               }}
               className={`flex-1 py-3 rounded-xl text-sm font-black transition-all ${
                 mode === m
-                  ? "bg-white text-black shadow-xl"
-                  : "text-gray-500 hover:text-white"
+                  ? "bg-gradient-to-r from-[#E3EF26] to-[#076653] text-gray-800 shadow-xl"
+                  : "text-gray-600 hover:text-gray-800"
               }`}
             >
               {m}
@@ -107,14 +99,14 @@ const ImageEncryptor = () => {
         </div>
 
         {/* Tabs Level 2: S-box Type */}
-        <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 mb-10">
+        <div className="flex bg-gradient-to-r from-[#E3EF26]/10 to-[#076653]/10 p-1 rounded-xl border border-[#0C342C]/20 mb-10">
           {["K44 S-box", "AES S-box"].map((t) => (
             <button
               key={t}
               onClick={() => setSboxType(t.split(" ")[0])}
               className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                 sboxType === t.split(" ")[0]
-                  ? "bg-[#2a2a2a] text-white border border-white/10"
+                  ? "bg-gradient-to-r from-[#076653] to-[#0C342C] text-white border border-[#0C342C]"
                   : "text-gray-600"
               }`}
             >
@@ -134,7 +126,7 @@ const ImageEncryptor = () => {
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
-              className="w-full bg-black/20 border border-white/10 rounded-2xl p-4 text-xs text-gray-500 file:bg-[#2a2a2a] file:text-white file:border-0 file:rounded-xl file:px-5 file:py-2 file:mr-5 file:font-black hover:file:bg-[#333] transition-all cursor-pointer"
+              className="w-full bg-white/80 border border-[#0C342C]/20 rounded-2xl p-4 text-xs text-gray-700 file:bg-gradient-to-r file:from-[#076653] file:to-[#0C342C] file:text-white file:border-0 file:rounded-xl file:px-5 file:py-2 file:mr-5 file:font-black hover:file:shadow-lg transition-all cursor-pointer"
             />
           </div>
 
@@ -148,25 +140,21 @@ const ImageEncryptor = () => {
               value={key}
               onChange={(e) => setKey(e.target.value)}
               placeholder="Masukkan kunci keamanan..."
-              className="w-full bg-black/20 border border-white/10 rounded-2xl px-6 py-4 text-base font-mono text-white outline-none focus:border-blue-500/50"
+              className="w-full bg-white/80 border border-[#0C342C]/20 rounded-2xl px-6 py-4 text-base font-mono text-gray-800 outline-none focus:border-[#076653]"
             />
           </div>
 
           {/* Preview Image & Download Button */}
           {output && (
             <div className="animate-in fade-in duration-500 space-y-4">
-              <label className="text-[11px] font-black text-blue-500 uppercase tracking-widest block italic">
+              <label className="text-[11px] font-black text-[#076653] uppercase tracking-widest block italic">
                 Cryptography Outcome:
               </label>
-              <div className="relative group overflow-hidden rounded-3xl border border-white/10">
-                <img
-                  src={output}
-                  className="w-full shadow-2xl transition-all"
-                  alt="Result"
-                />
+              <div className="relative group overflow-hidden rounded-3xl border border-[#0C342C]/20">
+                <img src={output} className="w-full shadow-2xl transition-all" alt="Result" />
                 <button
                   onClick={handleDownload}
-                  className="absolute bottom-6 right-6 bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:bg-blue-500 transition-all flex items-center gap-2 active:scale-95"
+                  className="absolute bottom-6 right-6 bg-gradient-to-r from-[#076653] to-[#0C342C] text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:shadow-[#0C342C]/30 transition-all flex items-center gap-2 active:scale-95"
                 >
                   <span>📥</span> Download Result
                 </button>
@@ -181,43 +169,38 @@ const ImageEncryptor = () => {
               disabled={loading}
               className={`w-full py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all ${
                 loading
-                  ? "bg-gray-800 text-gray-600"
-                  : "bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.01]"
+                  ? "bg-gray-300 text-gray-600"
+                  : "bg-gradient-to-r from-[#E3EF26] via-[#076653] to-[#0C342C] text-white hover:shadow-[#0C342C]/30 hover:scale-[1.01]"
               }`}
             >
-              {loading
-                ? "CALCULATING ANALYSIS..."
-                : `EXECUTE ${mode.toUpperCase()}`}
+              {loading ? "CALCULATING ANALYSIS..." : `EXECUTE ${mode.toUpperCase()}`}
             </button>
             <button
               onClick={handleClear}
-              className="w-full bg-[#2a2a2a] text-gray-500 py-5 rounded-3xl font-black text-sm uppercase border border-white/5 hover:bg-[#333] transition-all"
+              className="w-full bg-gradient-to-r from-white to-green-50 text-gray-700 py-5 rounded-3xl font-black text-sm uppercase border border-[#0C342C]/20 hover:border-[#0C342C] transition-all"
             >
               Clear Workspace
             </button>
           </div>
 
           {/* Limitasi Program */}
-          <div className="bg-black/30 rounded-3xl border border-white/5 p-8 mt-10">
+          <div className="bg-gradient-to-br from-white to-green-50 rounded-3xl border border-[#0C342C]/20 p-8 mt-10">
             <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-5 italic">
               ⓘ Program Limitations
             </p>
             <ul className="text-[11px] text-gray-600 space-y-2 list-disc pl-5 font-mono leading-relaxed">
               <li>
-                <span className="font-bold text-gray-400">Ukuran file:</span>{" "}
-                Maksimal 8 MB per upload
+                <span className="font-bold text-gray-400">Ukuran file:</span> Maksimal 8 MB per upload
               </li>
               <li>
-                <span className="font-bold text-gray-400">Memory:</span> Gambar
-                &gt; 100 MB mungkin memakan waktu lebih lama
+                <span className="font-bold text-gray-400">Memory:</span> Gambar &gt; 100 MB mungkin memakan waktu lebih
+                lama
               </li>
               <li>
-                <span className="font-bold text-gray-400">Algoritma:</span>{" "}
-                Substitusi S-box berdasarkan metrik riset
+                <span className="font-bold text-gray-400">Algoritma:</span> Substitusi S-box berdasarkan metrik riset
               </li>
               <li>
-                <span className="font-bold text-gray-400">Security:</span>{" "}
-                Evaluasi NPCR, UACI, dan Entropy
+                <span className="font-bold text-gray-400">Security:</span> Evaluasi NPCR, UACI, dan Entropy
               </li>
             </ul>
           </div>
@@ -225,12 +208,7 @@ const ImageEncryptor = () => {
       </div>
 
       {/* 5. TAMPILAN ANALISIS (Muncul otomatis setelah proses) */}
-      {analysisData && (
-        <ImageAnalysis
-          metrics={analysisData.metrics}
-          histograms={analysisData.histograms}
-        />
-      )}
+      {analysisData && <ImageAnalysis metrics={analysisData.metrics} histograms={analysisData.histograms} />}
     </div>
   );
 };
