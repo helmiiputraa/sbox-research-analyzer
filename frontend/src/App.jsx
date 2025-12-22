@@ -15,9 +15,7 @@ function App() {
               Sbox
             </div>
             <div>
-              <h1 className="text-xl font-black text-white leading-none">
-                AES S-box Research Analyzer
-              </h1>
+              <h1 className="text-xl font-black text-white leading-none">AES S-box Research Analyzer</h1>
               <p className="text-[10px] text-blue-500 uppercase tracking-[0.3em] mt-1 font-bold">
                 Affine Matrices Exploration Platform
               </p>
@@ -42,9 +40,8 @@ function App() {
             AES S-Box <span className="text-blue-600">Analyzer.</span>
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-medium">
-            Platform komprehensif untuk mengeksplorasi varian S-box AES melalui
-            manipulasi matriks afin, mengevaluasi kekuatan kriptografi, dan
-            visualisasi hasil secara interaktif.
+            Platform komprehensif untuk mengeksplorasi varian S-box AES melalui manipulasi matriks afin, mengevaluasi
+            kekuatan kriptografi, dan visualisasi hasil secara interaktif.
           </p>
         </div>
       </header>
@@ -53,32 +50,14 @@ function App() {
         {/* 2. RESEARCH TEAM SECTION */}
         <section id="team">
           <div className="flex items-center gap-6 mb-16">
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter">
-              Research Team
-            </h2>
+            <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Research Team</h2>
             <div className="h-[2px] flex-1 bg-white/5"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <TeamCard
-              name="Riski Yuniar Pratama"
-              role="Lead Cryptographer"
-              nim="2304130134"
-            />
-            <TeamCard
-              name="Naufal Tipasha Denyana"
-              role="Algorithm Analyst"
-              nim="2304130115"
-            />
-            <TeamCard
-              name="Lyon Ambrosio Djuanda"
-              role="System Architect"
-              nim="2304130098"
-            />
-            <TeamCard
-              name="Gangsar Reka Pambudi"
-              role="Security Researcher"
-              nim="2304130130"
-            />
+            <TeamCard name="Josephin Nova Bagaskara" nim="2304130002" />
+            <TeamCard name="Muhammad Faisal" nim="2304130004" />
+            <TeamCard name="Ihza Ferdina" nim="2304130017" />
+            <TeamCard name="Helmi Putra Noor Pratama" nim="2304130043" />
           </div>
         </section>
 
@@ -88,10 +67,7 @@ function App() {
         </section>
 
         {/* 4. RESEARCH PIPELINE OVERVIEW */}
-        <section
-          id="pipeline"
-          className="bg-white/[0.02] rounded-[3rem] p-16 border border-white/5 shadow-inner"
-        >
+        <section id="pipeline" className="bg-white/[0.02] rounded-[3rem] p-16 border border-white/5 shadow-inner">
           <div className="max-w-4xl">
             <h2 className="text-sm font-black text-blue-500 uppercase tracking-[0.4em] mb-4">
               Research Pipeline Overview
@@ -133,12 +109,9 @@ function App() {
         <section id="analysis">
           <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-12">
             <div>
-              <h2 className="text-4xl font-black text-white mb-3 uppercase tracking-tight">
-                Control Panel
-              </h2>
+              <h2 className="text-4xl font-black text-white mb-3 uppercase tracking-tight">Control Panel</h2>
               <p className="text-gray-500 text-lg font-medium">
-                Generate and analyze S-boxes using multiple affine matrices with
-                comprehensive strength testing.
+                Generate and analyze S-boxes using multiple affine matrices with comprehensive strength testing.
               </p>
             </div>
             <button className="bg-white text-black px-12 py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-2xl shadow-white/5 active:scale-95">
@@ -162,9 +135,8 @@ function App() {
             Projek Mata Kuliah Kriptografi - UNNES
           </p>
           <p className="text-sm text-gray-700 max-w-2xl mx-auto italic leading-relaxed mb-10 font-medium">
-            Platform ini mengimplementasikan riset "AES S-box modification uses
-            affine matrices exploration" yang menggunakan modifikasi matriks
-            afin $K_{44}$ dengan Nonlinearity 112 dan SAC 0.50073.
+            Platform ini mengimplementasikan riset "AES S-box modification uses affine matrices exploration" yang
+            menggunakan modifikasi matriks afin $K_{44}$ dengan Nonlinearity 112 dan SAC 0.50073.
           </p>
           <div className="flex justify-center gap-12 opacity-20 grayscale">
             {/* Logo Unnes Placeholder */}
@@ -185,12 +157,8 @@ const TeamCard = ({ name, role, nim }) => (
     <h3 className="text-white font-black text-lg mb-1 group-hover:text-blue-400 transition-colors tracking-tight">
       {name}
     </h3>
-    <p className="text-xs text-gray-500 font-bold mb-4 uppercase tracking-widest">
-      {role}
-    </p>
-    <p className="text-xs text-blue-500/50 font-mono font-bold tracking-tighter">
-      {nim}
-    </p>
+    <p className="text-xs text-gray-500 font-bold mb-4 uppercase tracking-widest">{role}</p>
+    <p className="text-xs text-blue-500/50 font-mono font-bold tracking-tighter">{nim}</p>
   </div>
 );
 
@@ -200,12 +168,8 @@ const PipelineStep = ({ num, title, desc }) => (
       {num}
     </div>
     <div className="pt-1">
-      <h4 className="text-white font-black text-xl mb-2 tracking-tight">
-        {title}
-      </h4>
-      <p className="text-base text-gray-500 leading-relaxed font-medium">
-        {desc}
-      </p>
+      <h4 className="text-white font-black text-xl mb-2 tracking-tight">{title}</h4>
+      <p className="text-base text-gray-500 leading-relaxed font-medium">{desc}</p>
     </div>
   </div>
 );
