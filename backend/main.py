@@ -207,6 +207,8 @@ def generate_analyze():
         }
     }
 
+export = app
+
 if __name__ == "__main__":
     import uvicorn
     # Menjalankan server pada port 8000
