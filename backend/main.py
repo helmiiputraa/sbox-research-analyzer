@@ -5,6 +5,12 @@ from PIL import Image
 import io
 import base64
 import math
+import sys
+import os
+
+# Tambahkan baris ini agar Python bisa melihat file di folder yang sama
+sys.path.append(os.path.dirname(__file__))
+
 from sbox_logic import generate_sbox44
 
 app = FastAPI()
