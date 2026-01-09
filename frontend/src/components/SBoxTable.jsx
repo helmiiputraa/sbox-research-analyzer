@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 const SBoxTable = () => {
   const [loading, setLoading] = useState(false);
@@ -16,9 +16,11 @@ const SBoxTable = () => {
   const handleGenerate = async () => {
     setLoading(true);
     try {
-      const res = await axios.post("http://127.0.0.1:8000/generate-analyze");
+      // TAMBAHKAN 'const res =' di depan call api
+      const res = await api.post("/generate-analyze");
       setData(res.data);
     } catch (e) {
+      console.error(e);
       alert("Error connecting to backend!");
     } finally {
       setLoading(false);
@@ -33,7 +35,8 @@ const SBoxTable = () => {
             Ready to Analyze
           </h2>
           <p className="text-gray-600 mb-10 max-w-lg">
-            Click generate to compare multiple S-box configurations with comprehensive strength testing.
+            Click generate to compare multiple S-box configurations with
+            comprehensive strength testing.
           </p>
           <button
             onClick={handleGenerate}
@@ -103,9 +106,27 @@ const SBoxTable = () => {
                 </tr>
               </thead>
               <tbody className="text-sm font-mono text-gray-700">
-                <CompRow label="Nonlinearity (Avg)" v1={resM.nl.avg} v2={aesM.nl.avg} target="112" winner="-" />
-                <CompRow label="Nonlinearity (Min)" v1={resM.nl.min} v2={aesM.nl.min} target="112" winner="-" />
-                <CompRow label="SAC (Average)" v1={resM.sac.avg} v2={aesM.sac.avg} target="~0.5" winner="K44" />
+                <CompRow
+                  label="Nonlinearity (Avg)"
+                  v1={resM.nl.avg}
+                  v2={aesM.nl.avg}
+                  target="112"
+                  winner="-"
+                />
+                <CompRow
+                  label="Nonlinearity (Min)"
+                  v1={resM.nl.min}
+                  v2={aesM.nl.min}
+                  target="112"
+                  winner="-"
+                />
+                <CompRow
+                  label="SAC (Average)"
+                  v1={resM.sac.avg}
+                  v2={aesM.sac.avg}
+                  target="~0.5"
+                  winner="K44"
+                />
                 <CompRow
                   label="BIC-SAC (Average)"
                   v1={resM.bic_sac.avg}
@@ -120,7 +141,13 @@ const SBoxTable = () => {
                   target="Lower is better"
                   winner="-"
                 />
-                <CompRow label="DAP (Max)" v1={resM.dap.max} v2={aesM.dap.max} target="Lower is better" winner="-" />
+                <CompRow
+                  label="DAP (Max)"
+                  v1={resM.dap.max}
+                  v2={aesM.dap.max}
+                  target="Lower is better"
+                  winner="-"
+                />
                 <CompRow
                   label="Max Cycle Length"
                   v1={resM.cycle.max}
@@ -128,7 +155,13 @@ const SBoxTable = () => {
                   target="Higher is better"
                   winner="K44"
                 />
-                <CompRow label="SV (Strength Value)" v1={resM.sv} v2={aesM.sv} target="Lower is better" winner="K44" />
+                <CompRow
+                  label="SV (Strength Value)"
+                  v1={resM.sv}
+                  v2={aesM.sv}
+                  target="Lower is better"
+                  winner="K44"
+                />
               </tbody>
             </table>
           </div>
@@ -159,8 +192,12 @@ const SBoxTable = () => {
                   key={v}
                   className="bg-gradient-to-br from-[#E3EF26]/30 to-[#076653]/30 border border-[#0C342C]/20 p-4 rounded-2xl text-center"
                 >
-                  <p className="text-[10px] text-gray-600 font-bold uppercase mb-1">{v}</p>
-                  <p className="text-emerald-600 font-black text-xs uppercase italic">Verified</p>
+                  <p className="text-[10px] text-gray-600 font-bold uppercase mb-1">
+                    {v}
+                  </p>
+                  <p className="text-emerald-600 font-black text-xs uppercase italic">
+                    Verified
+                  </p>
                 </div>
               ))}
             </div>
@@ -195,7 +232,9 @@ const SBoxTable = () => {
                       <div
                         onMouseEnter={() =>
                           setHovered({
-                            pos: `[${row.toString(16).toUpperCase()}${(i % 16).toString(16).toUpperCase()}]`,
+                            pos: `[${row.toString(16).toUpperCase()}${(i % 16)
+                              .toString(16)
+                              .toUpperCase()}]`,
                             idx: i,
                             hex: `0x${hex}`,
                             dec: parseInt(hex, 16),
@@ -218,21 +257,31 @@ const SBoxTable = () => {
               </p>
               <div className="space-y-10">
                 <div>
-                  <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">Position [Row, Col]:</p>
+                  <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">
+                    Position [Row, Col]:
+                  </p>
                   <p className="text-5xl font-black italic">{hovered.pos}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">Hex Value:</p>
+                  <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">
+                    Hex Value:
+                  </p>
                   <p className="text-5xl font-black italic">{hovered.hex}</p>
                 </div>
                 <div className="pt-10 border-t border-white/30 grid grid-cols-2 gap-10">
                   <div>
-                    <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">Decimal:</p>
+                    <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">
+                      Decimal:
+                    </p>
                     <p className="text-3xl font-black italic">{hovered.dec}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">Binary:</p>
-                    <p className="text-2xl font-mono font-bold tracking-tighter">{hovered.bin}</p>
+                    <p className="text-xs font-bold opacity-70 uppercase mb-2 tracking-widest">
+                      Binary:
+                    </p>
+                    <p className="text-2xl font-mono font-bold tracking-tighter">
+                      {hovered.bin}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -282,9 +331,23 @@ const CompRow = ({ label, v1, v2, target, winner }) => (
     <td className="p-8 font-black text-gray-600 group-hover:text-[#0C342C] transition-colors uppercase tracking-tighter">
       {label}
     </td>
-    <td className={`p-8 font-black ${winner === "K44" ? "text-gray-800" : "text-gray-600"}`}>{v1}</td>
-    <td className={`p-8 font-black ${winner === "AES" ? "text-gray-800" : "text-gray-600"}`}>{v2}</td>
-    <td className="p-8 text-gray-600 italic text-xs uppercase tracking-widest">{target}</td>
+    <td
+      className={`p-8 font-black ${
+        winner === "K44" ? "text-gray-800" : "text-gray-600"
+      }`}
+    >
+      {v1}
+    </td>
+    <td
+      className={`p-8 font-black ${
+        winner === "AES" ? "text-gray-800" : "text-gray-600"
+      }`}
+    >
+      {v2}
+    </td>
+    <td className="p-8 text-gray-600 italic text-xs uppercase tracking-widest">
+      {target}
+    </td>
     <td className="p-8">
       <span
         className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
@@ -310,9 +373,16 @@ const RankCard = ({ title, wins, isTop }) => (
     <div className="flex justify-between items-start">
       <div>
         <h4 className="text-6xl font-black mb-4 tracking-tighter">
-          {wins} <span className="text-sm uppercase tracking-[0.4em] opacity-60 ml-4">Wins</span>
+          {wins}{" "}
+          <span className="text-sm uppercase tracking-[0.4em] opacity-60 ml-4">
+            Wins
+          </span>
         </h4>
-        <p className={`text-sm font-black uppercase tracking-[0.3em] ${isTop ? "text-gray-700" : "text-gray-600"}`}>
+        <p
+          className={`text-sm font-black uppercase tracking-[0.3em] ${
+            isTop ? "text-gray-700" : "text-gray-600"
+          }`}
+        >
           {title}
         </p>
       </div>
@@ -332,8 +402,13 @@ const StrengthCard = ({ title, m }) => (
     </h4>
     <div className="space-y-4">
       {Object.entries(m).map(([k, v]) => (
-        <div key={k} className="flex justify-between items-center text-xs font-mono">
-          <span className="text-gray-600 uppercase font-black tracking-tighter">{k.replace("_", " ")}:</span>
+        <div
+          key={k}
+          className="flex justify-between items-center text-xs font-mono"
+        >
+          <span className="text-gray-600 uppercase font-black tracking-tighter">
+            {k.replace("_", " ")}:
+          </span>
           <span className="text-gray-800 font-black italic">{v}</span>
         </div>
       ))}

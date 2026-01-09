@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import ImageAnalysis from "./ImageAnalysis"; // Pastikan komponen ini sudah Anda buat
 
 const ImageEncryptor = () => {
@@ -25,7 +25,7 @@ const ImageEncryptor = () => {
 
     try {
       // Memanggil endpoint backend untuk pengolahan citra dan perhitungan metrik
-      const res = await axios.post("http://127.0.0.1:8000/process-image", formData, {
+      const res = await api.post("/process-image", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -40,7 +40,9 @@ const ImageEncryptor = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Gagal terhubung ke backend. Pastikan server Python (main.py) aktif.");
+      alert(
+        "Gagal terhubung ke backend. Pastikan server Python (main.py) aktif."
+      );
     } finally {
       setLoading(false);
     }
@@ -51,7 +53,8 @@ const ImageEncryptor = () => {
     if (!output) return;
     const link = document.createElement("a");
     link.href = output;
-    link.download = mode === "Encrypt Image" ? "encrypted_k44.png" : "decrypted_result.png";
+    link.download =
+      mode === "Encrypt Image" ? "encrypted_k44.png" : "decrypted_result.png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -63,7 +66,8 @@ const ImageEncryptor = () => {
     setKey("");
     setOutput(null);
     setAnalysisData(null);
-    if (document.getElementById("imageInput")) document.getElementById("imageInput").value = "";
+    if (document.getElementById("imageInput"))
+      document.getElementById("imageInput").value = "";
   };
 
   return (
@@ -151,7 +155,11 @@ const ImageEncryptor = () => {
                 Cryptography Outcome:
               </label>
               <div className="relative group overflow-hidden rounded-3xl border border-[#0C342C]/20">
-                <img src={output} className="w-full shadow-2xl transition-all" alt="Result" />
+                <img
+                  src={output}
+                  className="w-full shadow-2xl transition-all"
+                  alt="Result"
+                />
                 <button
                   onClick={handleDownload}
                   className="absolute bottom-6 right-6 bg-gradient-to-r from-[#076653] to-[#0C342C] text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:shadow-[#0C342C]/30 transition-all flex items-center gap-2 active:scale-95"
@@ -173,7 +181,9 @@ const ImageEncryptor = () => {
                   : "bg-gradient-to-r from-[#E3EF26] via-[#076653] to-[#0C342C] text-white hover:shadow-[#0C342C]/30 hover:scale-[1.01]"
               }`}
             >
-              {loading ? "CALCULATING ANALYSIS..." : `EXECUTE ${mode.toUpperCase()}`}
+              {loading
+                ? "CALCULATING ANALYSIS..."
+                : `EXECUTE ${mode.toUpperCase()}`}
             </button>
             <button
               onClick={handleClear}
@@ -190,17 +200,20 @@ const ImageEncryptor = () => {
             </p>
             <ul className="text-[11px] text-gray-600 space-y-2 list-disc pl-5 font-mono leading-relaxed">
               <li>
-                <span className="font-bold text-gray-400">Ukuran file:</span> Maksimal 8 MB per upload
+                <span className="font-bold text-gray-400">Ukuran file:</span>{" "}
+                Maksimal 8 MB per upload
               </li>
               <li>
-                <span className="font-bold text-gray-400">Memory:</span> Gambar &gt; 100 MB mungkin memakan waktu lebih
-                lama
+                <span className="font-bold text-gray-400">Memory:</span> Gambar
+                &gt; 100 MB mungkin memakan waktu lebih lama
               </li>
               <li>
-                <span className="font-bold text-gray-400">Algoritma:</span> Substitusi S-box berdasarkan metrik riset
+                <span className="font-bold text-gray-400">Algoritma:</span>{" "}
+                Substitusi S-box berdasarkan metrik riset
               </li>
               <li>
-                <span className="font-bold text-gray-400">Security:</span> Evaluasi NPCR, UACI, dan Entropy
+                <span className="font-bold text-gray-400">Security:</span>{" "}
+                Evaluasi NPCR, UACI, dan Entropy
               </li>
             </ul>
           </div>
@@ -208,7 +221,12 @@ const ImageEncryptor = () => {
       </div>
 
       {/* 5. TAMPILAN ANALISIS (Muncul otomatis setelah proses) */}
-      {analysisData && <ImageAnalysis metrics={analysisData.metrics} histograms={analysisData.histograms} />}
+      {analysisData && (
+        <ImageAnalysis
+          metrics={analysisData.metrics}
+          histograms={analysisData.histograms}
+        />
+      )}
     </div>
   );
 };

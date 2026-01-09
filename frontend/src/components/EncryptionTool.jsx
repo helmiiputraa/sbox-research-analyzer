@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 const EncryptionTool = () => {
   const [mode, setMode] = useState("Encrypt");
@@ -10,7 +10,7 @@ const EncryptionTool = () => {
 
   const handleAction = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/process-text", {
+      const res = await api.post("/process-text", {
         mode,
         sboxType,
         text,
@@ -108,7 +108,9 @@ const EncryptionTool = () => {
             <p className="text-[11px] font-black text-[#076653] uppercase mb-3 tracking-widest italic">
               Process Result:
             </p>
-            <p className="font-mono text-xl break-all text-gray-800 leading-relaxed font-black">{result}</p>
+            <p className="font-mono text-xl break-all text-gray-800 leading-relaxed font-black">
+              {result}
+            </p>
           </div>
         )}
 
